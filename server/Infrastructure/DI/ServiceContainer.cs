@@ -1,4 +1,6 @@
 using System.ComponentModel.Design;
+using Application.Contracts;
+using Infrastructure.Repos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ public static class ServiceContainer
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Default")));
-            return services;
+        services.AddScoped<IUser, UserRepo>();
+        return services;
     }
 }
