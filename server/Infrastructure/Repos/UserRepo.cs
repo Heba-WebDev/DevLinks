@@ -1,5 +1,5 @@
 using Application.Contracts;
-using Application.Dtos;
+using Application.Auth.Dtos;
 using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repos;

@@ -1,5 +1,5 @@
 
-using Application.Dtos;
+using Application.Auth.Dtos;
 
 namespace Application.Contracts;
 public interface IUser
