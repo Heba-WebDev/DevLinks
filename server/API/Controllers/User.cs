@@ -22,6 +22,28 @@ public class User : ControllerBase
             return BadRequest(new { message = response.Message });
         }
 
-        return Ok(new { message = response.Message });
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message
+        });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(UserLoginRequestDto dto)
+    {
+        var response = await _userRepo.UserLoginAsync(dto);
+
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message });
+        }
+
+        return Ok(new
+        {
+            status="success",
+            message = response.Message,
+            data = new { accessToken = response.token }
+        });
     }
 }
