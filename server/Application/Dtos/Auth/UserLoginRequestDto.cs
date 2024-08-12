@@ -1,13 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-namespace Application.Dtos;
+namespace Application.Auth.Dtos;
 
-public class UserRegisterRequestDto
+public class UserLoginRequestDto
 {
-    [Required(ErrorMessage = "Username is required")]
-    [StringLength(15, ErrorMessage ="Username cannot exceed 50 characters")]
-    public required string Username { get; set; }
-
-    [Required(ErrorMessage ="Email is required")]
+    [Required(ErrorMessage = "Email is required")]
     [EmailAddress]
     public required string Email { get; set; }
 
