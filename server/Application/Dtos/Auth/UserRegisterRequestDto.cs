@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace Application.Dtos;
+namespace Application.Auth.Dtos;
 
 public class UserRegisterRequestDto
 {
