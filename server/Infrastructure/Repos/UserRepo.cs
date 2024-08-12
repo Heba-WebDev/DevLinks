@@ -2,15 +2,19 @@ using Application.Contracts;
 using Application.Auth.Dtos;
 using Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Services;
 namespace Infrastructure.Repos;
 
 public class UserRepo : IUser
 {
     private readonly AppDbContext _appDbContext;
-    public UserRepo(AppDbContext appDbContext)
+    private readonly JwtService _jwtService;
+    public UserRepo(AppDbContext appDbContext, JwtService jwtService)
     {
         this._appDbContext = appDbContext;
+        this._jwtService = jwtService;
     }
+
     public async Task<UserRegisterResponse> UserRegisterAsync(UserRegisterRequestDto dto)
     {
         var emailExists = await GetUserByEmailAsync(dto.Email);
@@ -25,6 +29,16 @@ public class UserRepo : IUser
         });
         await _appDbContext.SaveChangesAsync();
         return new UserRegisterResponse(true, "User successfully registered");
+    }
+
+    public async Task<UserLoginResponse> UserLoginAsync(UserLoginRequestDto dto)
+    {
+        var user = await GetUserByEmailAsync(dto.Email);
+        if (user == null) return new UserLoginResponse(false, "Invalid credentials");
+        var matchedPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
+        if (!matchedPassword) return new UserLoginResponse(false, "Invalid credentials");
+        var token = _jwtService.GenerateToken(user.Id.ToString(), user.Role.ToString());
+        return new UserLoginResponse(true, "User loggedin successfully", token);
     }
 
     private async Task<User?> GetUserByEmailAsync(string email)
