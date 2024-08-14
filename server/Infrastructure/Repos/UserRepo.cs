@@ -3,6 +3,9 @@ using Application.Auth.Dtos;
 using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Services;
+using Application.Dtos.User;
+using Application.Dtos.Auth;
+using Core.Enums;
 namespace Infrastructure.Repos;
 
 public class UserRepo : IUser
@@ -34,11 +37,52 @@ public class UserRepo : IUser
     public async Task<UserLoginResponse> UserLoginAsync(UserLoginRequestDto dto)
     {
         var user = await GetUserByEmailAsync(dto.Email);
-        if (user == null) return new UserLoginResponse(false, "Invalid credentials");
+        if (user == null) return new UserLoginResponse(false, null, "Invalid credentials");
         var matchedPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
-        if (!matchedPassword) return new UserLoginResponse(false, "Invalid credentials");
+        if (!matchedPassword) return new UserLoginResponse(false, null, "Invalid credentials");
         var token = _jwtService.GenerateToken(user.Id.ToString(), user.Role.ToString());
-        return new UserLoginResponse(true, "User loggedin successfully", token);
+        var userDto = new UserResponse
+        {
+            Id = user.Id.ToString(),
+            Username = user.Username!,
+            Email = user.Email!,
+            Role = user.Role.ToString()
+        };
+        return new UserLoginResponse(true, userDto, "User loggedin successfully", token);
+    }
+
+    public async Task<UserProfileResponse> UserProfileUpdateAsync(UserProfileRequestDto dto, string userId)
+    {
+        var user = await GetUserByIdAsync(userId);
+        if (user == null) return new UserProfileResponse(false, "Invalid credentials");
+        if(!string.IsNullOrWhiteSpace(dto.Email))
+        {
+            var emailExists = await GetUserByEmailAsync(dto.Email);
+            if (emailExists != null && emailExists.Id != user.Id)
+            {
+                return new UserProfileResponse(false, "Email already in use");
+            }
+            user.Email = dto.Email;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.FirstName))
+        {
+            user.FirstName = dto.FirstName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.LastName))
+        {
+            user.LastName = dto.LastName;
+        }
+
+        _appDbContext.Users.Update(user);
+        await _appDbContext.SaveChangesAsync();
+        return new UserProfileResponse(true, "Profile successfully updated");
+    }
+
+    private async Task<User?> GetUserByIdAsync(string userId)
+    {
+        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
     }
 
     private async Task<User?> GetUserByEmailAsync(string email)
