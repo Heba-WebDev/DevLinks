@@ -1,4 +1,3 @@
-using System.ComponentModel.Design;
 using System.Text;
 using Application.Contracts;
 using Infrastructure.Repos;
@@ -40,6 +39,12 @@ public static class ServiceContainer
                 IssuerSigningKey = new SymmetricSecurityKey
                 (Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]!))
             };
+        });
+        // authorization
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
         });
         services.AddScoped<IUser, UserRepo>();
         return services;
