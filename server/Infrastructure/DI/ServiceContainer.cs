@@ -47,6 +47,8 @@ public static class ServiceContainer
             options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
         });
         services.AddScoped<IUser, UserRepo>();
+        services.AddScoped<IPlatform, PlatformRepo>();
+        services.AddScoped<IUploadImage, UploadImagesService>();
         return services;
     }
 }
