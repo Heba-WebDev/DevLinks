@@ -32,6 +32,42 @@ public class PlatformRepo : IPlatform
         return new CreatePlatformResponse(true, "Platform successfully created");
     }
 
+    public async Task<UpdatePlatformResponse> UpdatePlatformAsync(string id, UpdatePlatformRequestDto dto)
+    {
+        var platform = await PlatformByIdExists(id);
+        if (platform == null) return new UpdatePlatformResponse(false, "No platform found");
+        if (!string.IsNullOrWhiteSpace(dto.Name))
+        {
+            var nameExists = await PlatformNameExists(dto.Name);
+            if (nameExists != null && nameExists.Id != platform.Id)
+                return new UpdatePlatformResponse(false, "This platform name already exists");
+            platform.Name = dto.Name;
+        }
+        if (!string.IsNullOrWhiteSpace(dto.BaseUrl))
+        {
+            var baseUrlExists = await PlatformUrlExists(dto.BaseUrl);
+            if (baseUrlExists != null && baseUrlExists.Id != platform.Id)
+                return new UpdatePlatformResponse(false, "This platform url already exists");
+            platform.BaseUrl = dto.BaseUrl;
+        }
+        if(dto.IsSupported.HasValue)
+        {
+            platform.IsSupported = dto.IsSupported.Value;
+        }
+        if (dto.Image != null)
+        {
+            var imageUrl = _uploadImageService.SavePlatformImage(dto.Image, platform.Name);
+            platform.Image = imageUrl;
+        }
+        _appDbContext.Platforms.Update(platform);
+        await _appDbContext.SaveChangesAsync();
+        return new UpdatePlatformResponse(true, "Platform updated successfully");
+    }
+
+    private async Task<Platform?> PlatformByIdExists(string id)
+    {
+        return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.Id.ToString() == id);
+    }
     private async Task<Platform?> PlatformNameExists(string name)
     {
         return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.Name == name);
@@ -40,5 +76,4 @@ public class PlatformRepo : IPlatform
     {
         return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.BaseUrl == baseUrl);
     }
-
 }
