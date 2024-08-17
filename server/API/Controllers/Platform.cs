@@ -17,7 +17,7 @@ public class Platform : ControllerBase
 
     [Authorize(Policy = "AdminOnly")]
     [HttpPost]
-    public async Task<IActionResult> CreatePlatform(CreatePlatformRequestDto dto)
+    public async Task<IActionResult> CreatePlatform([FromForm] CreatePlatformRequestDto dto)
     {
         var role = User.FindFirstValue(ClaimTypes.Role);
         if (role != "Admin")
@@ -25,6 +25,24 @@ public class Platform : ControllerBase
             return Unauthorized("Unauthorized to perform this action");
         }
         var response = await _platformRepo.CreatePlatformAsync(dto);
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message
+        }
+        );
+    }
+
+    [Authorize(policy: "AdminOnly")]
+    [HttpPatch]
+    public async Task<IActionResult> UpdatePlatform([FromQuery] string id, [FromForm] UpdatePlatformRequestDto dto)
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        if (role != "Admin")
+        {
+            return Unauthorized("Unauthorized to perform this action");
+        }
+        var response = await _platformRepo.UpdatePlatformAsync(id, dto);
         return Ok(new
         {
             status = "success",
