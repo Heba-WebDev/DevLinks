@@ -50,4 +50,20 @@ public class Platform : ControllerBase
         }
         );
     }
+
+    [Authorize(Policy = "UserOrAdmin")]
+    [HttpGet]
+    public async Task<IActionResult> GetAllPlatforms()
+    {
+        var response = await _platformRepo.GetAllPlatformsAsync();
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message,
+            data = new {
+                response.Platforms
+            }
+        }
+       );
+    }
 }
