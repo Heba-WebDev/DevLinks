@@ -32,9 +32,15 @@ public class PlatformRepo : IPlatform
         return new CreatePlatformResponse(true, "Platform successfully created");
     }
 
-    public async Task<GetAllPlatformsResponse> GetAllPlatformsAsync()
+    public async Task<GetAllPlatformsResponse> GetAllPlatformsAsync(bool? isSupported)
     {
-        var platforms = await _appDbContext.Platforms.ToListAsync();
+        // allows modifications before executing the query against the db
+        var query = _appDbContext.Platforms.AsQueryable();
+        if (isSupported.HasValue)
+        {
+            query = query.Where(platform => platform.IsSupported == isSupported.Value);
+        }
+        var platforms = await query.ToListAsync(); // now the query is exectued
         return new GetAllPlatformsResponse(true, "Platforms retrieved successfully", platforms);
     }
 
