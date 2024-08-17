@@ -32,6 +32,12 @@ public class PlatformRepo : IPlatform
         return new CreatePlatformResponse(true, "Platform successfully created");
     }
 
+    public async Task<GetAllPlatformsResponse> GetAllPlatformsAsync()
+    {
+        var platforms = await _appDbContext.Platforms.ToListAsync();
+        return new GetAllPlatformsResponse(true, "Platforms retrieved successfully", platforms);
+    }
+
     public async Task<UpdatePlatformResponse> UpdatePlatformAsync(string id, UpdatePlatformRequestDto dto)
     {
         var platform = await PlatformByIdExists(id);
