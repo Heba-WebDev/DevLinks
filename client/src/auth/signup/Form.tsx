@@ -18,9 +18,9 @@ const RegisterForm = () => {
     const form = useForm<registerSchemaType>({
       resolver: zodResolver(registerSchema),
       defaultValues: {
+        username: "",
         email: "",
         password: "",
-        confirmPassword: ""
       },
     });
     const onSubmit = async (values: registerSchemaType) => {
@@ -30,6 +30,23 @@ const RegisterForm = () => {
     return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem className="pb-6">
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Max23"
+                    className=" mt-1 focus-visible:ring-0"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -64,25 +81,6 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem className="pb-6">
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="At least 8 characters"
-                    className=" mt-1 focus-visible:ring-0"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <div className="w-full pt-3">
             <Button variant={"default"} className="w-full">
               Create new account
