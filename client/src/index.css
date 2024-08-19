@@ -71,4 +71,6 @@
 
 body {
   font-family: 'Instrument Sans', sans-serif;
+  background-color: #FAFAFA;
+  height: 100vh;
 }
