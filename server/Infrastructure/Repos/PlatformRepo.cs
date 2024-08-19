@@ -76,6 +76,13 @@ public class PlatformRepo : IPlatform
         return new UpdatePlatformResponse(true, "Platform updated successfully");
     }
 
+    public async Task<GetAPlatformResponseDto> GetAPlatformAsync(string id)
+    {
+        var platform = await PlatformByIdExists(id);
+        if (platform == null) return new GetAPlatformResponseDto(false, "No platform found", null);
+        return new GetAPlatformResponseDto(true, "Platform successfully fetched", platform);
+    }
+
     private async Task<Platform?> PlatformByIdExists(string id)
     {
         return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.Id.ToString() == id);
