@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -51,6 +51,33 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        purple: {
+          DEFAULT: "#633CFF",
+        },
+        purpleHover: {
+          DEFAULT: "#BEADFF",
+        },
+        purpleLight: {
+          DEFAULT: "#EFEBFF",
+        },
+        dark: {
+          DEFAULT: "#333333",
+        },
+        gray: {
+          DEFAULT: "#737373",
+        },
+        borders: {
+          DEFAULT: "#D9D9D9",
+        },
+        grayLight: {
+          DEFAULT: "#FAFAFA",
+        },
+        white: {
+          DEFAULT: "#FFFFFF",
+        },
+        red: {
+          DEFAULT: "#FF3939",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -74,4 +101,16 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
+
+/*
+purple: "#633CFF",
+      purpleHover: "#BEADFF",
+      purpleLight: "#EFEBFF",
+      dark: "#333333",
+      gray: "#737373",
+      borders: "#D9D9D9",
+      grayLight: "#FAFAFA",
+      white: "#FFFFFF",
+      red: "#FF3939"
+*/
