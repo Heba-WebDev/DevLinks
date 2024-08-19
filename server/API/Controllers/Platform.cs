@@ -50,4 +50,40 @@ public class Platform : ControllerBase
         }
         );
     }
+
+    [Authorize(policy: "UserOrAdmin")]
+    [HttpGet]
+    public async Task<IActionResult> GetAllPlatforms()
+    {
+        var response = await _platformRepo.GetAllPlatformsAsync();
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message,
+            data = response.Platforms
+        }
+        );
+    }
+
+    [Authorize(policy: "UserOrAdmin")]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAPlatforms(string id)
+    {
+        var response = await _platformRepo.GetAPlatformAsync(id);
+        if (!response.Flag)
+        {
+            return BadRequest(new
+            {
+                status = "fail",
+                message = response.Message
+            });
+        }
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message,
+            data = response.Platform
+        }
+        );
+    }
 }
