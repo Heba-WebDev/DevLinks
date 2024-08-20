@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Contracts;
 using Application.Dtos.Platform;
 using Core.Entities;
@@ -20,6 +21,8 @@ public class PlatformRepo : IPlatform
         if (nameExists != null) return new CreatePlatformResponse(false, "This platform name already exists");
         var baseUrlExists = await PlatformUrlExists(dto.BaseUrl);
         if (baseUrlExists != null) return new CreatePlatformResponse(false, "This platform url already exists");
+        var isColorCorrect = IsColorFormatCorrect(dto.Color);
+        if (!isColorCorrect) return new CreatePlatformResponse(false, "Incorrect color format");
         var imageUrl = _uploadImageService.SavePlatformImage(dto.Image!, dto.Name);
         _appDbContext.Platforms.Add(new Platform()
         {
@@ -27,6 +30,7 @@ public class PlatformRepo : IPlatform
             BaseUrl = dto.BaseUrl,
             Image = imageUrl,
             IsSupported = true,
+            Color = dto.Color,
         });
         await _appDbContext.SaveChangesAsync();
         return new CreatePlatformResponse(true, "Platform successfully created");
@@ -62,6 +66,12 @@ public class PlatformRepo : IPlatform
                 return new UpdatePlatformResponse(false, "This platform url already exists");
             platform.BaseUrl = dto.BaseUrl;
         }
+        if (!string.IsNullOrWhiteSpace(dto.Color))
+        {
+            var isColorCorrect = IsColorFormatCorrect(dto.Color);
+            if (!isColorCorrect) return new UpdatePlatformResponse(false, "Incorrect color format");
+            platform.Color = dto.Color;
+        }
         if(dto.IsSupported.HasValue)
         {
             platform.IsSupported = dto.IsSupported.Value;
@@ -94,5 +104,10 @@ public class PlatformRepo : IPlatform
     private async Task<Platform?> PlatformUrlExists(string baseUrl)
     {
         return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.BaseUrl == baseUrl);
+    }
+    private static bool IsColorFormatCorrect(string color)
+    {
+        string pattern = @"^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$";
+        return Regex.IsMatch(color, pattern);
     }
 }
