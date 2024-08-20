@@ -19,12 +19,15 @@ public class Platform : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePlatform([FromForm] CreatePlatformRequestDto dto)
     {
-        var role = User.FindFirstValue(ClaimTypes.Role);
-        if (role != "Admin")
-        {
-            return Unauthorized("Unauthorized to perform this action");
-        }
         var response = await _platformRepo.CreatePlatformAsync(dto);
+        if (!response.Flag)
+        {
+            return BadRequest(new
+            {
+                status = "fail",
+                message = response.Message
+            });
+        }
         return Ok(new
         {
             status = "success",
@@ -37,12 +40,15 @@ public class Platform : ControllerBase
     [HttpPatch]
     public async Task<IActionResult> UpdatePlatform([FromQuery] string id, [FromForm] UpdatePlatformRequestDto dto)
     {
-        var role = User.FindFirstValue(ClaimTypes.Role);
-        if (role != "Admin")
-        {
-            return Unauthorized("Unauthorized to perform this action");
-        }
         var response = await _platformRepo.UpdatePlatformAsync(id, dto);
+        if (!response.Flag)
+        {
+            return BadRequest(new
+            {
+                status = "fail",
+                message = response.Message
+            });
+        }
         return Ok(new
         {
             status = "success",
