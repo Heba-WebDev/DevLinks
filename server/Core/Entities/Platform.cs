@@ -9,5 +9,7 @@ public class Platform: EntityBase
     public required string BaseUrl { get; set; }
     [Required]
     public required string Image { get; set; }
-    public bool IsSupported { get; set; }
+    [Required]
+    public required string Color { get; set; }
+    public bool IsSupported { get; set; } = true;
 }
