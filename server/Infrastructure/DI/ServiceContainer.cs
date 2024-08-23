@@ -49,6 +49,7 @@ public static class ServiceContainer
         services.AddScoped<IUser, UserRepo>();
         services.AddScoped<IPlatform, PlatformRepo>();
         services.AddScoped<IUploadImage, UploadImagesService>();
+        services.AddScoped<ILink, LinkRepo>();
         return services;
     }
 }
