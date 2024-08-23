@@ -19,6 +19,8 @@ public class LinkRepo : ILink
         if(user == null) return new AddLinkResponseDto(false, "No user found");
         var platform = await PlatformExists(dto.PlatformId);
         if (platform == null) return new AddLinkResponseDto(false, "No platform found");
+        var userHasLink = await LinkExists(dto.UserId, dto.PlatformId);
+        if (userHasLink == true) return new AddLinkResponseDto(false, "A link for this platform already exists");
         var validUrl = ValidLink(dto.Url, platform);
         if (validUrl == false) return new AddLinkResponseDto(false, "Invalid link");
         await _appDbContext.Links.AddAsync(new Link
@@ -39,6 +41,14 @@ public class LinkRepo : ILink
     private async Task<Platform?> PlatformExists(string id)
     {
         return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.Id.ToString() == id);
+    }
+
+    private async Task<bool> LinkExists(string userId, string platformId)
+    {
+        // Check if any link exists with the given userId and platformId
+        return await _appDbContext.Links.AnyAsync(
+            link => link.PlatformId.ToString() == platformId && link.UserId.ToString() == userId
+        );
     }
 
     private static bool ValidLink(string url, Platform platform)
