@@ -40,6 +40,17 @@ public static class ServiceContainer
                 (Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]!))
             };
         });
+        // cors
+        services.AddCors(options =>
+        {
+            options.AddPolicy(name: "developmentCors", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173");
+            policy.AllowAnyHeader();
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+        });
+        });
         // authorization
         services.AddAuthorization(options =>
         {
