@@ -1,13 +1,12 @@
-"use server"
-
+"use server";
 import axios from "axios";
+import { AxiosBase } from "@/common/axios";
 import { registerSchemaType } from "../types";
-const baseUrl = import.meta.env.API_URL;
 
 export const registerUser = async (values: registerSchemaType) => {
      try {
-    const response = await axios.post(
-      `${baseUrl}/api/v1/auth/register`,
+    const response = await AxiosBase.post(
+      `/api/v1/auth/register`,
       values,
     );
     return response.data;
