@@ -4,4 +4,5 @@ namespace Application.Contracts;
 public interface ILink
 {
     Task<AddLinkResponseDto> AddLinkAsync(AddLinkRequestDto dto);
+    Task<UpdateLinkResponse> UpdateLinkAsync(UpdateLinkRequestDto dto);
 }

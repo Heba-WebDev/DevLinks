@@ -29,4 +29,23 @@ public class Link : ControllerBase
             message = response.Message,
         });
     }
+
+    [Authorize(policy: "UserOrAdmin")]
+    [HttpPatch]
+    public async Task<IActionResult> UpdateLink([FromBody] UpdateLinkRequestDto dto)
+    {
+        var response = await _linkRepo.UpdateLinkAsync(dto);
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message});
+        }
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message,
+            data = new {
+                response.Link
+            }
+        });
+    }
 }

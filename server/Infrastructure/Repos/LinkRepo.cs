@@ -29,8 +29,31 @@ public class LinkRepo : ILink
             PlatformId = new Guid(dto.PlatformId),
             Url = dto.Url
         });
-
         return new AddLinkResponseDto(true, "Link successfully added");
+    }
+
+    public async Task<UpdateLinkResponse> UpdateLinkAsync(UpdateLinkRequestDto dto)
+    {
+        var link = await _appDbContext.Links
+        .Include(x => x.User)
+        .Include(x => x.Platform)
+        .FirstOrDefaultAsync(x => x.UserId.ToString() == dto.UserId && x.PlatformId.ToString() == dto.PlatformId);
+
+        if(link == null) return new UpdateLinkResponse(false, "No link found", null);
+        if(link.User == null) return new UpdateLinkResponse(false, "No user found", null);
+        if (link.Platform == null) return new UpdateLinkResponse(false, "No platform found", null);
+
+        var validUrl = ValidLink(dto.Url, link.Platform);
+        if(validUrl == false) return new UpdateLinkResponse(false, "Invalid link", null);
+        link.Url = dto.Url;
+        await _appDbContext.SaveChangesAsync();
+        var response = new UpdateLinkResponseDto
+        {
+            Url = link.Url,
+            UserId = link.User.Id.ToString(),
+            PlatformName = link.Platform.Name
+        };
+        return new UpdateLinkResponse(true, "Link successfully updated", response);
     }
 
     private async Task<User?> UserExists(string id)
