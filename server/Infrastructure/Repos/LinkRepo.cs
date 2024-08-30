@@ -1,4 +1,3 @@
-
 using Application.Contracts;
 using Application.Dtos.Link;
 using Core.Entities;
@@ -15,13 +14,21 @@ public class LinkRepo : ILink
     }
     public async Task<AddLinkResponseDto> AddLinkAsync(AddLinkRequestDto dto)
     {
-        var user = await UserExists(dto.UserId);
-        if(user == null) return new AddLinkResponseDto(false, "No user found");
-        var platform = await PlatformExists(dto.PlatformId);
-        if (platform == null) return new AddLinkResponseDto(false, "No platform found");
-        var userHasLink = await LinkExists(dto.UserId, dto.PlatformId);
+        var query = from user in _appDbContext.Users
+                    join platform in _appDbContext.Platforms on new Guid(dto.PlatformId) equals platform.Id
+                    where user.Id == new Guid(dto.UserId)
+                    select new { User = user, Platform = platform };
+
+        var result = await query.FirstOrDefaultAsync();
+        if (result == null)
+        {
+            return new AddLinkResponseDto(false, "User or platform not found");
+        }
+        var userHasLink = await _appDbContext.Links.AnyAsync(
+            link => link.PlatformId.ToString() == dto.PlatformId && link.UserId.ToString() == dto.UserId
+        );
         if (userHasLink == true) return new AddLinkResponseDto(false, "A link for this platform already exists");
-        var validUrl = ValidLink(dto.Url, platform);
+        var validUrl = ValidLink(dto.Url, result.Platform);
         if (validUrl == false) return new AddLinkResponseDto(false, "Invalid link");
         await _appDbContext.Links.AddAsync(new Link
         {
@@ -29,6 +36,7 @@ public class LinkRepo : ILink
             PlatformId = new Guid(dto.PlatformId),
             Url = dto.Url
         });
+        await _appDbContext.SaveChangesAsync();
         return new AddLinkResponseDto(true, "Link successfully added");
     }
 
@@ -54,24 +62,6 @@ public class LinkRepo : ILink
             PlatformName = link.Platform.Name
         };
         return new UpdateLinkResponse(true, "Link successfully updated", response);
-    }
-
-    private async Task<User?> UserExists(string id)
-    {
-        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id.ToString() == id);
-    }
-
-    private async Task<Platform?> PlatformExists(string id)
-    {
-        return await _appDbContext.Platforms.FirstOrDefaultAsync(x => x.Id.ToString() == id);
-    }
-
-    private async Task<bool> LinkExists(string userId, string platformId)
-    {
-        // Check if any link exists with the given userId and platformId
-        return await _appDbContext.Links.AnyAsync(
-            link => link.PlatformId.ToString() == platformId && link.UserId.ToString() == userId
-        );
     }
 
     private static bool ValidLink(string url, Platform platform)
