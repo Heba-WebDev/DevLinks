@@ -48,4 +48,24 @@ public class Link : ControllerBase
             }
         });
     }
+
+    [Authorize(policy: "UserOrAdmin")]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAllLinks(Guid id)
+    {
+        var response = await _linkRepo.GetAllLinksAsync(id);
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message });
+        }
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message,
+            data = new
+            {
+                response.Links
+            }
+        });
+    }
 }
