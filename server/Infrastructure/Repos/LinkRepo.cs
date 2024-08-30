@@ -64,6 +64,30 @@ public class LinkRepo : ILink
         return new UpdateLinkResponse(true, "Link successfully updated", response);
     }
 
+    public async Task<GetAllLinksResponse> GetAllLinksAsync(Guid id)
+    {
+        var query = from user in _appDbContext.Users
+                    where user.Id == id
+                    select new {
+                        User = user,
+                        Links = _appDbContext.Links
+                        .Where(x => x.UserId == id)
+                        .Include(x => x.Platform)
+                        .Select(x => new GetAllLinks{
+                            Url = x.Url,
+                            UserId = x.UserId.ToString(),
+                            PlatformName = x.Platform!.Name
+                        })
+                        .ToList()
+                    };
+        var result = await query.FirstOrDefaultAsync();
+        if (result == null)
+        {
+            return new GetAllLinksResponse(false, "User not found", null);
+        }
+        return new GetAllLinksResponse(true, "Links successfully fetched", result.Links);
+    }
+
     private static bool ValidLink(string url, Platform platform)
     {
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(platform.BaseUrl)) return false;
@@ -80,4 +104,5 @@ public class LinkRepo : ILink
         return urlUri.Host.Equals(baseUri.Host, StringComparison.OrdinalIgnoreCase) &&
            urlUri.AbsolutePath.StartsWith(baseUri.AbsolutePath, StringComparison.OrdinalIgnoreCase);
     }
+
 }
