@@ -88,6 +88,16 @@ public class LinkRepo : ILink
         return new GetAllLinksResponse(true, "Links successfully fetched", result.Links);
     }
 
+    public async Task<DeleteLinkResponseDto> DeleteLinkAsync(Guid userId, Guid linkId)
+    {
+        var link = await _appDbContext.Links
+            .FirstOrDefaultAsync(x => x.Id == linkId && x.UserId == userId);
+        if (link == null) return new DeleteLinkResponseDto(false, "No link found");
+        _appDbContext.Links.Remove(link);
+        await _appDbContext.SaveChangesAsync();
+        return new DeleteLinkResponseDto(true, "Link deleted succssfully");
+    }
+
     private static bool ValidLink(string url, Platform platform)
     {
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(platform.BaseUrl)) return false;
