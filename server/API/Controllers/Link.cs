@@ -2,6 +2,7 @@ using Application.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Application.Dtos.Link;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -67,5 +68,22 @@ public class Link : ControllerBase
                 response.Links
             }
         });
+    }
+
+    [Authorize(policy: "UserOrAdmin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLink(Guid id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if(userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            return Unauthorized("Invalid indentification");
+        }
+        var response = await _linkRepo.DeleteLinkAsync(userId, id);
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message });
+        }
+        return NoContent();
     }
 }
