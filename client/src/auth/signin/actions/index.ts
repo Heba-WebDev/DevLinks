@@ -1,11 +1,11 @@
 "use server"
 import axios from "axios";
-import { base } from "@/axios/base";
+import { AxiosBase } from "@/common/axios";
 import { loginSchemaType } from "../types";
 
 export const loginUser = async (values: loginSchemaType) => {
      try {
-    const response = await base.post(
+    const response = await AxiosBase.post(
       `/api/v1/auth/login`,
       values,
     );
