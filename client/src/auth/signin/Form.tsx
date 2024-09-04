@@ -13,9 +13,11 @@ import {
 import { loginSchemaType } from "./types";
 import { loginrSchema } from "./schemas/login-schema";
 import { loginUser } from "./actions";
-
+import { useAppDispatch } from "@/hooks/store";
+import { login } from "@/store/user/user-slice";
 
 const LoginForm = () => {
+  const dispatch = useAppDispatch();
   const form = useForm<loginSchemaType>({
     resolver: zodResolver(loginrSchema),
     defaultValues: {
@@ -25,6 +27,7 @@ const LoginForm = () => {
   });
   const onSubmit = async (values: loginSchemaType) => {
     const response = await loginUser(values);
+    // dispatch(login({accessToken: response.data.accessToken, ...response.data.user}));
     console.log(response);
   };
   return (
