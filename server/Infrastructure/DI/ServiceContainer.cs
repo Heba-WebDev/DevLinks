@@ -49,6 +49,7 @@ public static class ServiceContainer
             policy.AllowAnyHeader();
             policy.AllowAnyHeader();
             policy.AllowAnyMethod();
+            policy.AllowCredentials();
         });
         });
         // authorization
