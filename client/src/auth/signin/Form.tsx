@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,14 +12,22 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/index";
+import { PiEnvelopeSimpleFill } from "react-icons/pi";
+import { IoIosLock, IoIosEyeOff, IoIosEye } from "react-icons/io";
+import Spinner from "@/components/shared/spinner";
+import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 import { loginSchemaType } from "./types";
 import { loginrSchema } from "./schemas/login-schema";
 import { loginUser } from "./actions";
 import { useAppDispatch } from "@/hooks/store";
 import { login } from "@/store/user/user-slice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<loginSchemaType>({
     resolver: zodResolver(loginrSchema),
     defaultValues: {
@@ -25,10 +35,23 @@ const LoginForm = () => {
       password: "",
     },
   });
+  const mutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      if (data.status === "success") {
+        toast.success("Successfully logged in");
+        dispatch(login({accessToken: data.data.accessToken, ...data.data.user}));
+        navigate("/");
+      } else {
+        toast.error(data.error);
+      }
+    },
+    onError: () => {
+      toast.error("Unexpected error occurred");
+    },
+  });
   const onSubmit = async (values: loginSchemaType) => {
-    const response = await loginUser(values);
-    // dispatch(login({accessToken: response.data.accessToken, ...response.data.user}));
-    console.log(response);
+    mutation.mutate(values);
   };
   return (
     <Form {...form}>
@@ -37,12 +60,13 @@ const LoginForm = () => {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="pb-6">
+            <FormItem className="pb-6 relative">
               <FormLabel>Email address</FormLabel>
+              <PiEnvelopeSimpleFill className=" absolute top-[36px] text-gray ml-2 text-lg" />
               <FormControl>
                 <Input
                   placeholder="e.g john@gmail.com"
-                  className=" mt-1 focus-visible:ring-0"
+                  className="mt-1 pl-7 focus-visible:ring-0"
                   {...field}
                 />
               </FormControl>
@@ -54,12 +78,26 @@ const LoginForm = () => {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="pb-6">
+            <FormItem className="pb-6 relative">
+              <IoIosLock className="absolute top-[42px] text-gray ml-2 text-lg" />
+              <IoIosEyeOff
+                onClick={() => setShowPassword(!showPassword)}
+                className={`${
+                  !showPassword ? "block" : "hidden"
+                } absolute text-gray right-0 top-[36.6px] mr-2 hover:cursor-pointer`}
+              />
+              <IoIosEye
+                onClick={() => setShowPassword(!showPassword)}
+                className={`${
+                  showPassword ? "block" : "hidden"
+                } absolute text-gray right-0 top-[36.6px] mr-2 hover:cursor-pointer`}
+              />
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
                   placeholder="At least 8 characters"
-                  className=" mt-1 focus-visible:ring-0"
+                  type={showPassword ? "text" : "password"}
+                  className="mt-1 pl-7 focus-visible:ring-0"
                   {...field}
                 />
               </FormControl>
@@ -69,7 +107,7 @@ const LoginForm = () => {
         />
         <div className="w-full pt-3">
           <Button variant={"default"} className="w-full">
-            Create new account
+            {mutation.isPending ? <Spinner /> : "Login"}
           </Button>
         </div>
       </form>
