@@ -1,9 +1,11 @@
-import { Button } from "./components/ui/button"
-function App() {
+import { Button } from "./components/ui/button";
+import { useAppSelector } from "./hooks/store";
 
+function App() {
+  const user = useAppSelector((state) => state.user);
   return (
     <>
-      <h1 className="text-2xl text-orange-700">Hola Mundo</h1>
+      <h1 className="text-2xl text-orange-700">Hola ${user.firstName} ${user.lastName}</h1>
       <Button className=" bg-blue-200">Click me</Button>
     </>
   );
