@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { userState } from "./interfaces";
 
-const initialState: userState = {
+const userSavedState = localStorage.getItem("user");
+const initialState: userState = userSavedState ? JSON.parse(userSavedState) : {
     accessToken: null,
     email: "",
     firstName: null,
@@ -18,9 +19,11 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         login: (_state, action: PayloadAction<userState>) => {
+            localStorage.setItem("user", JSON.stringify(action.payload));
             return action.payload;
         },
         logout: () => {
+            localStorage.removeItem("user");
             return initialState;
         }
     }
