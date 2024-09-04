@@ -41,7 +41,7 @@ const RegisterForm = () => {
           toast.success("Successfully registered");
           navigate("/login");
         } else {
-          toast.error(data.message);
+          toast.error(data.error);
         }
       },
       onError: () => {
