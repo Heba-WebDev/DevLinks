@@ -1,6 +1,6 @@
-import { AuthLayoutProps } from "./types";
+import { LayoutProps } from "./types";
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       <section className="w-full flex flex-col gap-12 py-8 bg-white md:bg-grayLight h-screen md:h-auto md:items-center md:justify-center">

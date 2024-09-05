@@ -3,15 +3,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Form,
   Input,
   Button,
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/index";
+} from "@/components/ui";
 import Spinner from "@/components/shared/spinner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

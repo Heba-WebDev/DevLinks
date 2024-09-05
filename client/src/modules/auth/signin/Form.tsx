@@ -3,15 +3,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Form,
   Input,
   Button,
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/index";
+} from "@/components/ui";
 import { PiEnvelopeSimpleFill } from "react-icons/pi";
 import { IoIosLock, IoIosEyeOff, IoIosEye } from "react-icons/io";
 import Spinner from "@/components/shared/spinner";
@@ -23,6 +23,7 @@ import { loginUser } from "./actions";
 import { useAppDispatch } from "@/hooks/store";
 import { login } from "@/store/user/user-slice";
 import { useNavigate } from "react-router-dom";
+
 
 const LoginForm = () => {
   const navigate = useNavigate();
