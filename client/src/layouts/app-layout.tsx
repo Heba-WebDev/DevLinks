@@ -7,7 +7,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   return (
     <>
-      <section className="w-full flex flex-col gap-12 py-8 h-screen">
+      <section className="w-full flex flex-col gap-y-4 md:gap-y-6 py-8 h-screen max-w-[1750px] mx-auto">
         <nav className="grid grid-cols-3 items-center justify-between bg-white md:mx-6 rounded-lg p-4">
           <Link to={"/"} className="">
             <img
@@ -27,7 +27,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
               className={`flex items-center gap-2 font-medium text-lg ${
                 location.pathname === "/links"
                   ? "text-purple bg-purpleLight px-5 lg:px-7 py-3 rounded-lg"
-                  : "text-gray"
+                  : "text-gray px-5 lg:px-7 py-3 hover:text-purple"
               }`}
             >
               <FaLink className=" text-2xl" />
@@ -38,7 +38,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
               className={`flex items-center gap-2 font-medium text-lg ${
                 location.pathname === "/profile"
                   ? "text-purple bg-purpleLight px-5 lg:px-7 py-3 rounded-lg"
-                  : "text-gray"
+                  : "text-gray px-5 lg:px-7 py-3 hover:text-purple"
               }`}
             >
               <FaRegUserCircle className=" text-2xl" />
@@ -49,11 +49,11 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
             to={"/preview"}
             className="flex gap-1 items-center justify-end text-purple"
           >
-            <div className="text-xl border border-purple px-5 py-2 rounded-lg font-semibold block md:hidden">
+            <div className="text-xl border hover:bg-purpleLight border-purple px-5 py-2 rounded-lg font-semibold block md:hidden">
               <FaEye className="" />
             </div>
 
-            <p className="hidden md:block border border-purple px-7 py-3 rounded-lg font-semibold">
+            <p className="hidden md:block border hover:bg-purpleLight border-purple px-7 py-3 rounded-lg font-semibold">
               Preview
             </p>
           </Link>

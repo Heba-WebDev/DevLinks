@@ -3,6 +3,7 @@ import App from '../App';
 import Register from '@/modules/auth/signup/page';
 import Login from '@/modules/auth/signin/page';
 import Profile from '@/modules/profile/page';
+import Links from '@/modules/links/page';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />
+  },
+  {
+    path: "/links",
+    element: <Links />
   }
 ]);
 
