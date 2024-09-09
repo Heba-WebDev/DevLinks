@@ -75,3 +75,6 @@ body {
   background-color: #FAFAFA;
   height: 100vh;
 }
+input::file-selector-button {
+  color: #EFEBFF;
+}
