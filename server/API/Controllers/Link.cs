@@ -2,7 +2,7 @@ using Application.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Application.Dtos.Link;
-using System.Security.Claims;
+using API.Extensions;
 
 namespace API.Controllers;
 
@@ -51,10 +51,15 @@ public class Link : ControllerBase
     }
 
     [Authorize(policy: "UserOrAdmin")]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetAllLinks(Guid id)
+    [HttpGet]
+    public async Task<IActionResult> GetAllLinks()
     {
-        var response = await _linkRepo.GetAllLinksAsync(id);
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized("Invalid indentification");
+        }
+        var response = await _linkRepo.GetAllLinksAsync((Guid)userId);
         if (!response.Flag)
         {
             return BadRequest(new { message = response.Message });
@@ -74,12 +79,12 @@ public class Link : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLink(Guid id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if(userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        var userId = User.GetUserId();
+        if(!userId.HasValue)
         {
             return Unauthorized("Invalid indentification");
         }
-        var response = await _linkRepo.DeleteLinkAsync(userId, id);
+        var response = await _linkRepo.DeleteLinkAsync((Guid)userId, id);
         if (!response.Flag)
         {
             return BadRequest(new { message = response.Message });
