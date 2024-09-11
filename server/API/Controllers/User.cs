@@ -1,9 +1,8 @@
-
+using API.Extensions;
 using Application.Contracts;
 using Application.Dtos.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace API.Controllers;
 [Route("/api/v1/users")]
@@ -19,17 +18,22 @@ public class User : ControllerBase
     }
 
     [Authorize(Policy = "UserOrAdmin")]
-    [HttpPost("update-profile")]
-    public async Task<IActionResult> UpdateProfile(UserProfileRequestDto dto)
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateProfile(string id, UserProfileRequestDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userRole = User.FindFirstValue(ClaimTypes.Role);
-        if (userId != dto.Id && userRole != "Admin")
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized("Invalid indentification");
+        }
+        var userRole = User.GetUserRole();
+
+        if (userId.ToString() != id && userRole != "Admin")
         {
             return Unauthorized("Unauthorized to perform this action");
         }
 
-        var response = await _userRepo.UserProfileUpdateAsync(dto, userId!);
+        var response = await _userRepo.UserProfileUpdateAsync((Guid)userId, dto);
         if (!response.Flag)
         {
             return BadRequest(new { message = response.Message });
@@ -37,7 +41,10 @@ public class User : ControllerBase
         return Ok(new
         {
             status = "success",
-            message = response.Message
+            message = response.Message,
+            data = new {
+                response.User
+            }
         }
         );
     }
