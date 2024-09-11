@@ -20,7 +20,12 @@ public class Link : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddLink(AddLinkRequestDto dto)
     {
-        var response = await _linkRepo.AddLinkAsync(dto);
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized("Invalid indentification");
+        }
+        var response = await _linkRepo.AddLinkAsync((Guid)userId, dto);
         if (!response.Flag)
         {
             return BadRequest(new { message = response.Message });
