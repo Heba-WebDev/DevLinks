@@ -12,11 +12,11 @@ public class LinkRepo : ILink
     {
         _appDbContext = appDbContext;
     }
-    public async Task<AddLinkResponseDto> AddLinkAsync(AddLinkRequestDto dto)
+    public async Task<AddLinkResponseDto> AddLinkAsync(Guid userId, AddLinkRequestDto dto)
     {
         var query = from user in _appDbContext.Users
                     join platform in _appDbContext.Platforms on new Guid(dto.PlatformId) equals platform.Id
-                    where user.Id == new Guid(dto.UserId)
+                    where user.Id == userId
                     select new { User = user, Platform = platform };
 
         var result = await query.FirstOrDefaultAsync();
@@ -25,14 +25,14 @@ public class LinkRepo : ILink
             return new AddLinkResponseDto(false, "User or platform not found");
         }
         var userHasLink = await _appDbContext.Links.AnyAsync(
-            link => link.PlatformId.ToString() == dto.PlatformId && link.UserId.ToString() == dto.UserId
+            link => link.PlatformId.ToString() == dto.PlatformId && link.UserId == userId
         );
         if (userHasLink == true) return new AddLinkResponseDto(false, "A link for this platform already exists");
         var validUrl = ValidLink(dto.Url, result.Platform);
         if (validUrl == false) return new AddLinkResponseDto(false, "Invalid link");
         await _appDbContext.Links.AddAsync(new Link
         {
-            UserId = new Guid(dto.UserId),
+            UserId = userId,
             PlatformId = new Guid(dto.PlatformId),
             Url = dto.Url
         });
