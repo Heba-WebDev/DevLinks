@@ -51,7 +51,7 @@ public class UserRepo : IUser
         return new UserLoginResponse(true, userDto, "User loggedin successfully", token);
     }
 
-    public async Task<UserProfileResponse> UserProfileUpdateAsync(UserProfileRequestDto dto, string userId)
+    public async Task<UserProfileResponse> UserProfileUpdateAsync(Guid userId, UserProfileRequestDto dto)
     {
         var user = await GetUserByIdAsync(userId);
         if (user == null) return new UserProfileResponse(false, "Invalid credentials");
@@ -77,12 +77,22 @@ public class UserRepo : IUser
 
         _appDbContext.Users.Update(user);
         await _appDbContext.SaveChangesAsync();
-        return new UserProfileResponse(true, "Profile successfully updated");
+        var userDto = new UserResponse
+        {
+            Id = user.Id.ToString(),
+            Username = user.Username!,
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Image = user.Image,
+            Role = user.Role.ToString(),
+        };
+        return new UserProfileResponse(true, "Profile successfully updated", userDto);
     }
 
-    private async Task<User?> GetUserByIdAsync(string userId)
+    private async Task<User?> GetUserByIdAsync(Guid userId)
     {
-        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
+        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
     }
 
     private async Task<User?> GetUserByEmailAsync(string email)
