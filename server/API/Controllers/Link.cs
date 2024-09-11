@@ -40,7 +40,12 @@ public class Link : ControllerBase
     [HttpPatch]
     public async Task<IActionResult> UpdateLink([FromBody] UpdateLinkRequestDto dto)
     {
-        var response = await _linkRepo.UpdateLinkAsync(dto);
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized("Invalid indentification");
+        }
+        var response = await _linkRepo.UpdateLinkAsync((Guid) userId, dto);
         if (!response.Flag)
         {
             return BadRequest(new { message = response.Message});

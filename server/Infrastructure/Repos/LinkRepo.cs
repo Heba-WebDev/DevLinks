@@ -40,12 +40,12 @@ public class LinkRepo : ILink
         return new AddLinkResponseDto(true, "Link successfully added");
     }
 
-    public async Task<UpdateLinkResponse> UpdateLinkAsync(UpdateLinkRequestDto dto)
+    public async Task<UpdateLinkResponse> UpdateLinkAsync(Guid userId, UpdateLinkRequestDto dto)
     {
         var link = await _appDbContext.Links
         .Include(x => x.User)
         .Include(x => x.Platform)
-        .FirstOrDefaultAsync(x => x.UserId.ToString() == dto.UserId && x.PlatformId.ToString() == dto.PlatformId);
+        .FirstOrDefaultAsync(x => x.UserId == userId && x.PlatformId.ToString() == dto.PlatformId);
 
         if(link == null) return new UpdateLinkResponse(false, "No link found", null);
         if(link.User == null) return new UpdateLinkResponse(false, "No user found", null);
