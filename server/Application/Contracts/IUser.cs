@@ -9,5 +9,5 @@ public interface IUser
 {
     Task<UserRegisterResponse> UserRegisterAsync(UserRegisterRequestDto dto);
     Task<UserLoginResponse> UserLoginAsync(UserLoginRequestDto dto);
-    Task<UserProfileResponse> UserProfileUpdateAsync(UserProfileRequestDto dto, string userId);
+    Task<UserProfileResponse> UserProfileUpdateAsync(Guid userId, UserProfileRequestDto dto);
 }
