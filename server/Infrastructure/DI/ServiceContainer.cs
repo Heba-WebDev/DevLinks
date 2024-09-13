@@ -1,5 +1,6 @@
 using System.Text;
 using Application.Contracts;
+using Core.Entities;
 using Infrastructure.Repos;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -52,6 +53,8 @@ public static class ServiceContainer
             policy.AllowCredentials();
         });
         });
+        // email
+        services.Configure<Email>(configuration.GetSection("EmailSettings"));
         // authorization
         services.AddAuthorization(options =>
         {
@@ -62,6 +65,7 @@ public static class ServiceContainer
         services.AddScoped<IPlatform, PlatformRepo>();
         services.AddScoped<IUploadImage, UploadImagesService>();
         services.AddScoped<ILink, LinkRepo>();
+        services.AddTransient<IEmail, EmailSender>();
         return services;
     }
 }
