@@ -8,4 +8,5 @@ public interface IUser
     Task<UserLoginResponse> UserLoginAsync(UserLoginRequestDto dto);
     Task<UserProfileResponse> UserProfileUpdateAsync(Guid userId, UserProfileRequestDto dto);
     Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequestDto dto);
+    Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequestDto dto);
 }

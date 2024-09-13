@@ -67,4 +67,20 @@ public class Auth : ControllerBase
             message = response.Message
         });
     }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto dto)
+    {
+        var response = await _userRepo.ResetPasswordAsync(dto);
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message });
+        }
+        return Ok(new
+        {
+            status = "success",
+            message = response.Message
+        });
+    }
 }
