@@ -2,6 +2,7 @@ using Application.Contracts;
 using Application.Auth.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Application.Dtos.Auth;
 
 namespace API.Controllers;
 [Route("/api/v1/auth")]
@@ -24,7 +25,7 @@ public class Auth : ControllerBase
         {
             return BadRequest(new { message = response.Message });
         }
-        
+
         return Ok(new
         {
             status = "success",
@@ -49,6 +50,21 @@ public class Auth : ControllerBase
             status="success",
             message = response.Message,
             data = new { accessToken = response.Token, user = response.User }
+        });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto dto)
+    {
+        var response = await _userRepo.ForgotPasswordAsync(dto);
+        if (!response.Flag)
+        {
+            return BadRequest(new { message = response.Message });
+        }
+        return Ok( new {
+            status = "success",
+            message = response.Message
         });
     }
 }
