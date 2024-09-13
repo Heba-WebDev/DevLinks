@@ -84,7 +84,7 @@ public class JwtService
             var purpose = jwtToken.Claims.FirstOrDefault(x => x.Type == "purpose")?.Value;
             if (purpose != "reset_password")
             {
-                return (false, null, "Invalid token purpose");
+                return (false, null, "Invalid token");
             }
             return (true, userId, null);
         }
