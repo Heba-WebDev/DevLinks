@@ -5,17 +5,21 @@ using Microsoft.EntityFrameworkCore;
 using Infrastructure.Services;
 using Application.Dtos.User;
 using Application.Dtos.Auth;
-using Core.Enums;
+using Microsoft.Extensions.Configuration;
 namespace Infrastructure.Repos;
 
 public class UserRepo : IUser
 {
     private readonly AppDbContext _appDbContext;
     private readonly JwtService _jwtService;
-    public UserRepo(AppDbContext appDbContext, JwtService jwtService)
+    private readonly IEmail _email;
+    private readonly IConfiguration _configuration;
+    public UserRepo(AppDbContext appDbContext, JwtService jwtService, IEmail email, IConfiguration configuration)
     {
         this._appDbContext = appDbContext;
         this._jwtService = jwtService;
+        this._email = email;
+        this._configuration = configuration;
     }
 
     public async Task<UserRegisterResponse> UserRegisterAsync(UserRegisterRequestDto dto)
@@ -90,6 +94,17 @@ public class UserRepo : IUser
         return new UserProfileResponse(true, "Profile successfully updated", userDto);
     }
 
+    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequestDto dto)
+    {
+        var user = await this._appDbContext.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
+        if (user == null) return new ForgotPasswordResponse(true, "An email with instruction has been sent");
+        var url = this.GetResetPasswordUrl(user.Id, user.Role.ToString());
+        var message = $"If you've lost your password or wish to reset it, use the link below to get started: {url}";
+        var subject = "Reset your password || Devlinks";
+        await _email.SendEmailAsync(dto.Email, subject, message);
+        return new ForgotPasswordResponse(true, "An email with instruction has been sent");
+    }
+
     private async Task<User?> GetUserByIdAsync(Guid userId)
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
@@ -103,5 +118,12 @@ public class UserRepo : IUser
     private async Task<User?> GetUserByUsernameAsync(string username)
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Username == username);
+    }
+
+    private string GetResetPasswordUrl(Guid userId, string userRole)
+    {
+        var token = _jwtService.GenerateToken(userId.ToString(), userRole);
+        var baseUrl = _configuration["AppSettings:BaseUrl"];
+        return $"{baseUrl}/auth/reset-password?token={token}";
     }
 }
