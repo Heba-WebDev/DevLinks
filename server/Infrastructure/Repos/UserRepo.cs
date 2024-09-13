@@ -134,6 +134,6 @@ public class UserRepo : IUser
     {
         var token = _jwtService.GenerateToken(userId.ToString(), userRole);
         var baseUrl = _configuration["AppSettings:BaseUrl"];
-        return $"{baseUrl}/auth/reset-password?token={token}";
+        return $"{baseUrl}/reset-password?token={token}";
     }
 }
