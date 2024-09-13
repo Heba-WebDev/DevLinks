@@ -22,8 +22,7 @@ import { loginrSchema } from "./schemas/login-schema";
 import { loginUser } from "./actions";
 import { useAppDispatch } from "@/hooks/store";
 import { login } from "@/store/user/user-slice";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -106,8 +105,13 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
+        <div className="-mt-3 flex justify-end w-full">
+          <Link to="/forgot-password" className="text-sm text-right text-gray">
+            Forgot password?
+          </Link>
+        </div>
         <div className="w-full pt-3">
-          <Button variant={"default"} className="w-full">
+          <Button variant={"default"} className="w-full hover:bg-purpleHover">
             {mutation.isPending ? <Spinner /> : "Login"}
           </Button>
         </div>
