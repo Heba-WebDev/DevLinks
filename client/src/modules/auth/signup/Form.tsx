@@ -122,8 +122,8 @@ const RegisterForm = () => {
             )}
           />
           <div className="w-full pt-3">
-            <Button variant={"default"} className="w-full">
-              {mutation.isPending ? <Spinner /> : "Create new account" }
+            <Button variant={"default"} className="w-full hover:bg-purpleHover">
+              {mutation.isPending ? <Spinner /> : "Create new account"}
             </Button>
           </div>
         </form>
