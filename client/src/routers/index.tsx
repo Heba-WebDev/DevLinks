@@ -4,6 +4,7 @@ import Register from '@/modules/auth/signup/page';
 import Login from '@/modules/auth/signin/page';
 import Profile from '@/modules/profile/page';
 import Links from '@/modules/links/page';
+import ForgotPassword from '@/modules/auth/forgot-password/page';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />
   },
   {
     path: "/profile",
