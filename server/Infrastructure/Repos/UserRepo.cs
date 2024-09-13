@@ -105,6 +105,16 @@ public class UserRepo : IUser
         return new ForgotPasswordResponse(true, "An email with instruction has been sent");
     }
 
+    public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequestDto dto)
+    {
+        var (IsValid, UserId, ErrorMessage) = _jwtService.ValidatePasswordResetToken(dto.Token);
+        if (!IsValid) return new ResetPasswordResponse(false, ErrorMessage!);
+        var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id.ToString() == UserId);
+        if (user == null) return new ResetPasswordResponse(false, "Invalid credentials");
+        user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        await _appDbContext.SaveChangesAsync();
+        return new ResetPasswordResponse(true, "Password successfully updated");
+    }
     private async Task<User?> GetUserByIdAsync(Guid userId)
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
