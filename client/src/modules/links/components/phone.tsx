@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui";
 export default function Phone() {
     return (
       <>
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-[550px]">
           <div className="absolute inset-0">
             <img
               src="/common/phone.svg"
