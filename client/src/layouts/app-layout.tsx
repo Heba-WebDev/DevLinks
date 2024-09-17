@@ -1,13 +1,20 @@
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { LayoutProps } from "./types";
 import { FaLink, FaRegUserCircle, FaEye } from "react-icons/fa";
+import { useAppSelector } from "@/hooks/store";
 
 const AppLayout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user);
+  useEffect(() => {
+    if (!user.accessToken) navigate("/login");
+  }, [navigate, user]);
+
   return (
     <>
-      <section className="w-full flex flex-col gap-y-4 md:gap-y-6 py-8 h-screen max-w-[1750px] mx-auto">
+      <section className="w-full flex flex-col gap-y-4 md:gap-y-6 pb-8 md:py-8 h-screen max-w-[1750px] mx-auto">
         <nav className="grid grid-cols-3 items-center justify-between bg-white md:mx-6 rounded-lg p-4">
           <Link to={"/"} className="">
             <img
