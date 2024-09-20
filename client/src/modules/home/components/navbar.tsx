@@ -24,7 +24,7 @@ export default function NavBar() {
       }
     };
     return (
-      <nav className="flex flex-row-reverse md:flex-row items-center justify-between bg-grayLight rounded-lg py-4 md:py-6 px-6">
+      <nav className="flex flex-row-reverse md:flex-row items-center justify-between bg-grayLight rounded-lg py-4 md:py-6 px-2 md:px-6">
         <div className="block md:hidden">
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger>
@@ -86,7 +86,11 @@ export default function NavBar() {
         <Link to={"/"} className="">
           <img src="/common/devlinks-logo.svg" alt="Devlinks Logo" />
         </Link>
-        <div className={`hidden ${user.accessToken ? "md:flex" : "md:hidden"} gap-8 justify-between`}>
+        <div
+          className={`hidden ${
+            user.accessToken ? "md:flex" : "md:hidden"
+          } gap-8 justify-between`}
+        >
           <Link
             to={"/links"}
             className={`flex items-center gap-2 font-medium text-lg ${
