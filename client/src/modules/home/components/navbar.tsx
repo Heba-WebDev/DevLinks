@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMenuOutline } from "react-icons/io5";
 import { IoMdClose, IoMdHome, IoMdLogOut } from "react-icons/io";
-import { FaUser, FaLink } from "react-icons/fa";
+import { FaUser, FaLink, FaRegUserCircle } from "react-icons/fa";
 import { MdOutlinePowerSettingsNew } from "react-icons/md";
 import {
   DropdownMenu,
@@ -86,16 +86,45 @@ export default function NavBar() {
         <Link to={"/"} className="">
           <img src="/common/devlinks-logo.svg" alt="Devlinks Logo" />
         </Link>
+        <div className={`hidden ${user.accessToken ? "md:flex" : "md:hidden"} gap-8 justify-between`}>
+          <Link
+            to={"/links"}
+            className={`flex items-center gap-2 font-medium text-lg ${
+              location.pathname === "/links"
+                ? "text-purple bg-purpleLight px-5 lg:px-7 py-3 rounded-lg"
+                : "text-gray px-5 lg:px-7 py-3 hover:text-purple"
+            }`}
+          >
+            <FaLink className=" text-2xl" />
+            <p className="hidden md:block">Links</p>
+          </Link>
+          <Link
+            to={"/profile"}
+            className={`flex items-center gap-2 font-medium text-lg ${
+              location.pathname === "/profile"
+                ? "text-purple bg-purpleLight px-5 lg:px-7 py-3 rounded-lg"
+                : "text-gray px-5 lg:px-7 py-3 hover:text-purple"
+            }`}
+          >
+            <FaRegUserCircle className=" text-2xl" />
+            <p className="hidden md:block">Profile</p>
+          </Link>
+        </div>
         <div className="hidden md:flex items-center gap-4">
           <Link
-            to={"/login"}
-            className=" bg-white border border-purple text-gray px-6 py-2 rounded-md"
+            to={user.accessToken ? "/" : "/login"}
+            onClick={() => {
+              if (user.accessToken) logoutUser();
+            }}
+            className=" bg-white border border-purple text-gray px-6 py-2 rounded-md hover:bg-purpleLight hover:text-purple hover:border-transparent"
           >
-            Log in
+            {user.accessToken ? "Log out" : "Log in"}
           </Link>
           <Link
             to={"/signup"}
-            className="bg-purple text-white px-6 py-2 rounded-md"
+            className={`bg-purple hover:bg-white border hover:border-purple hover:text-purple text-white px-6 py-2 rounded-md ${
+              user.accessToken ? "hidden" : "block"
+            }`}
           >
             Get Started
           </Link>
