@@ -1,5 +1,6 @@
 import CoreValues from "./components/core-values";
 import Hero from "./components/hero";
+import Mission from "./components/mission";
 import NavBar from "./components/navbar"
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
     <NavBar />
     <Hero />
     <CoreValues />
+    <Mission />
     </main>
   );
 }
