@@ -74,9 +74,10 @@ public class LinkRepo : ILink
                         .Where(x => x.UserId == id)
                         .Include(x => x.Platform)
                         .Select(x => new GetAllLinks{
+                            Id = x.Id.ToString(),
                             Url = x.Url,
-                            UserId = x.UserId.ToString(),
-                            PlatformName = x.Platform!.Name
+                            PlatformName = x.Platform!.Name,
+                            PlatformId = x.PlatformId.ToString()
                         })
                         .ToList()
                     };
