@@ -1,9 +1,30 @@
-import { Skeleton } from "@/components/ui";
+import { useAppSelector } from "@/hooks/store";
+import UserPhoto from "./user-image";
+import UserName from "./user-name";
+import UserUsername from "./user-username";
+import EmptyLinksSkeleton from "./empty-links-skeleton";
+import { FaYoutube, FaGithub } from "react-icons/fa";
+
+const platforms = [
+    {
+      "name": "YouTube",
+      "icon": <FaYoutube />,
+      "color": "#EE3939"
+    },
+    {
+      "name": "GitHub",
+      "icon": <FaGithub />,
+      "color": "#1A1A1A"
+    }
+];
 
 export default function Phone() {
+    const user = useAppSelector((state) => state.user);
+    const links = useAppSelector((state) => state.links);
+    const emptyLinksCount = Math.max(0, 5 - (links?.length || 0));
     return (
       <>
-        <div className="relative w-full h-[550px]">
+        <div className="relative w-full pt-20 h-[550px]">
           <div className="absolute inset-0">
             <img
               src="/common/phone.svg"
@@ -18,30 +39,33 @@ export default function Phone() {
               className="object-contain w-[96%] h-[99%]"
             />
           </div>
-          <div className="absolute inset-0 right-2 top-20 h-20 w-20 mx-auto flex justify-center">
-            <Skeleton className="rounded-full w-20 " />
-          </div>
-          <div className="absolute inset-0 right-2 top-[34%] h-4 w-32 mx-auto flex justify-center">
-            <Skeleton className="rounded-full w-32" />
-          </div>
+          <div className=" grid gap-14">
+            <div className="flex flex-col gap-1">
+              <UserPhoto image={user.image} />
+              <UserName firstName={user.firstName} lastName={user.lastName} />
+              <UserUsername username={user.username} />
+            </div>
 
-          <div className="absolute inset-0 right-2 top-[39%] h-2 w-20 mx-auto flex justify-center">
-            <Skeleton className="rounded-full w-20" />
-          </div>
-          <div className="absolute inset-0 right-0 top-[50%] h-11 w-48 xl:w-52 mx-auto flex justify-center">
-            <Skeleton className="rounded-small w-48  xl:w-52" />
-          </div>
-
-          <div className="absolute inset-0 right-0 top-[60%] h-11 w-48 xl:w-52 mx-auto flex justify-center">
-            <Skeleton className="rounded-small w-48 xl:w-52" />
-          </div>
-
-          <div className="absolute inset-0 right-0 top-[70%] h-11 w-48 xl:w-52 mx-auto flex justify-center">
-            <Skeleton className="rounded-small w-48 xl:w-52" />
-          </div>
-
-          <div className="absolute inset-0 right-0 top-[80%] h-11 w-48 xl:w-52 mx-auto flex justify-center">
-            <Skeleton className="rounded-small w-48 xl:w-52" />
+            <div className="flex flex-col gap-2 -mt-4 lg:mt-1">
+              {links &&
+                links.length > 0 &&
+                links?.map((link, index) => {
+                  const platform = platforms.filter(x => x.name.toLowerCase() === link.platformName.toLocaleLowerCase());
+                  const color = platform[0].color;
+                  return (
+                    <div
+                      key={index}
+                      className={`relative bg-[${color}] text-white h-11 w-48 xl:w-52 mx-auto justify-center items-center rounded-md`}
+                    >
+                      <p className="rounded-small font-extralight h-full w-full flex gap-3 items-center px-4 text-center">
+                        <span>{platform[0].icon}</span>{" "}
+                        <span>{link.platformName}</span>
+                      </p>
+                    </div>
+                  );
+                })}
+              <EmptyLinksSkeleton number={emptyLinksCount} />
+            </div>
           </div>
         </div>
       </>
