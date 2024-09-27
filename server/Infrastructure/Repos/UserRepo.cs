@@ -50,6 +50,9 @@ public class UserRepo : IUser
             Id = user.Id.ToString(),
             Username = user.Username!,
             Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Image = user.Image,
             Role = user.Role.ToString()
         };
         return new UserLoginResponse(true, userDto, "User loggedin successfully", token);

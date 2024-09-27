@@ -1,13 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
 } from "@/components/ui";
 import LetsGetStarted from "./get-started";
 import { linkProps } from "../types/index";
 import Link from "./link";
+import { useAppDispatch, useAppSelector } from "@/hooks/store";
+import { getLinks } from "@/store/links/links-slice";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLinks } from "../actions";
 
 export default function LinksForm() {
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.user);
+    // const savedLinks = useAppSelector((state) => state.links);
     const [links, setLinks] = useState<linkProps[]>([]);
     const addLink = () => {
       const link: linkProps = {
@@ -18,7 +25,17 @@ export default function LinksForm() {
       };
       setLinks([...links, link]);
     }
-
+    const { isFetched, data } = useQuery({
+      queryKey: ["links"],
+      queryFn: () => fetchLinks(user.accessToken!),
+      enabled: !!user.accessToken,
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    });
+    useEffect(() => {
+      if (isFetched) dispatch(getLinks(data?.data?.links))
+    }, [isFetched, dispatch, data]);
     return (
       <div className="">
         <Button
