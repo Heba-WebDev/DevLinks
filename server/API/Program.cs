@@ -1,7 +1,9 @@
 using Infrastructure.DI;
 using Microsoft.OpenApi.Models;
+using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.SerilogConfiguration();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
