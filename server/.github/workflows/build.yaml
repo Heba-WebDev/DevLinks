@@ -1,0 +1,26 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0.203'  # Specify your .NET version
+
+      - name: Restore dependencies
+        run: dotnet restore MySolution.sln
+
+      - name: Build projects
+        run: dotnet build MySolution.sln --configuration Release --no-restore
+
