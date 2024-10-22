@@ -16,11 +16,11 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '8.0.203'  # Specify your .NET version
+          dotnet-version: '8.0.203'
 
       - name: Restore dependencies
-        run: dotnet restore ./server/MySolution.sln
+        run: dotnet restore ./server/devlinks.sln
 
       - name: Build projects
-        run: dotnet build ./server/MySolution.sln --configuration Release --no-restore
+        run: dotnet build ./server/devlinks.sln --configuration Release --no-restore
 
